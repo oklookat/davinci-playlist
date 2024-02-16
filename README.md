@@ -5,9 +5,10 @@ Davinci resolve music playlist to YouTube timecodes.
 Tested on DaVinci Resolve 18 Studio
 
 1. Open DaVinci project that contains many audiofiles (music) in first audio timeline.
-2. Create venv: `python -m venv .venv`.
-3. `pip install pip install pydavinci --ignore-requires-python`
-4. Activate script: `python ./main.py`.
+2. Clone repo and cd to it.
+3. Create venv: `python -m venv .venv`.
+4. `pip install pip install pydavinci --ignore-requires-python`
+5. Activate script: `python ./main.py`.
 
 ## Supported filenames
 
