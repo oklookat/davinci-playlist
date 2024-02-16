@@ -21,8 +21,8 @@ Timecodes will be saved in timecodes.txt
 
 Example:
 
-`
+```txt
 00:00:00 Cool Artist - Cool track
 00:04:22 Cool Artist 2 - Cool track 2
 00:07:12 Cool Artist 2 - Cool track 2
-`
+```
