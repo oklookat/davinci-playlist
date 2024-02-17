@@ -38,10 +38,10 @@ timeline.custom_settings(True)
 with io.open("timecodes.txt", mode="w", encoding="utf-8") as f:
     for item in timeline.items("audio", 1):
         itemProps = item.mediapoolitem.properties
-        itemName = itemProps['Clip Name']
         if not isinstance(itemProps, dict):
             print("Media pool item properties not a dict. Its strange.")
             break
+        itemName = itemProps['Clip Name']    
         if itemProps['Audio Codec'] != "MP3":
             print(f"'{itemName}' have wrong codec. Only MP3 supported.")
             break
