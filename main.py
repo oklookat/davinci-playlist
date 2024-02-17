@@ -1,6 +1,6 @@
 import io
-from pathlib import Path
 from pydavinci import davinci
+import eyed3
 
 resolve = davinci.Resolve()
 
@@ -32,25 +32,32 @@ class AudioTimeConverter:
 
         return self
 
-# Example: 01 - Cool Artist - Cool track.mp3
-def formatDeemixStyle(file: str) -> str:
-    splitted = file.split(" ")[2:]
-    return " ".join(splitted)
-
 timeline = resolve.active_timeline
 timeline.custom_settings(True)
 
-f = io.open("timecodes.txt", mode="w", encoding="utf-8") 
- 
-for item in timeline.items("audio", 1):
-    converter = AudioTimeConverter(timeline.settings.frame_rate)
-    ti = converter.frames_to_time(item.start, item.end)
-    formattedFilename = Path(item.name).stem
-    formattedFilenameDeemix = formatDeemixStyle(formattedFilename)
-    formatted = f"{ti.start_hours:02}:{ti.start_minutes:02}:{ti.start_seconds:02} {formattedFilenameDeemix}"
-    f.write(f"{formatted}\n")
-
-f.close()
+with io.open("timecodes.txt", mode="w", encoding="utf-8") as f:
+    for item in timeline.items("audio", 1):
+        itemProps = item.mediapoolitem.properties
+        itemName = itemProps['Clip Name']
+        if not isinstance(itemProps, dict):
+            print("Media pool item properties not a dict. Its strange.")
+            break
+        if itemProps['Audio Codec'] != "MP3":
+            print(f"'{itemName}' have wrong codec. Only MP3 supported.")
+            break
+        pathd = itemProps["File Path"]
+        af = eyed3.load(pathd).tag
+        if not hasattr(af, 'artist') or not hasattr(af, 'title'):
+            print(f"'{itemName}' dont have artist and title tags.")
+            break
+        artist = af.artist
+        title = af.title
+        converter = AudioTimeConverter(timeline.settings.frame_rate)
+        ti = converter.frames_to_time(item.start, item.end)
+        formatted = f"{ti.start_minutes:02}:{ti.start_seconds:02} {artist} - {title}"
+        if ti.start_hours > 0:
+            formatted = f"{ti.start_hours:02}:" + formatted
+        f.write(f"{formatted}\n")
 
 
 #print(f"{ti.start_hours:02}:{ti.start_minutes:02}:{ti.start_seconds:02} - {ti.end_hours:02}:{ti.end_minutes:02}:{ti.end_seconds:02}")
